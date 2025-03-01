@@ -1,9 +1,10 @@
-// WebRTC data channel text chat with codeword protection, obfuscated swear filter, rules page, and view-only mode
+// QfB Chat with username support
 
 // --- Codeword ---
 const codeword = "rhombicosidodecahedron";
 let authenticated = false;
 let viewOnly = false;
+let username = ""; // Store username
 
 // --- Signaling Server (Simplified Example - Replace with a real one) ---
 const signalingServer = {
@@ -26,17 +27,14 @@ const configuration = {
 
 let peerConnection;
 let dataChannel;
-let messageQueue = []; // Queue messages if data channel is not open
+let messageQueue = [];
 
 const createPeerConnection = () => {
   peerConnection = new RTCPeerConnection(configuration);
 
   peerConnection.onicecandidate = (event) => {
-    if (event.candidate && (authenticated || viewOnly) ) {
-      // Send ICE candidates to the other peer via the signaling server
+    if (event.candidate && (authenticated || viewOnly)) {
       console.log("ICE candidate sent");
-      //In a real implementation, you would send this to the signaling server.
-      //signalingServer.sendCandidate(otherPeerId, event.candidate);
     }
   };
 
@@ -49,14 +47,20 @@ const createPeerConnection = () => {
 const setupDataChannel = () => {
   dataChannel.onopen = () => {
     console.log("Data channel opened");
-    processMessageQueue(); // Process queued messages once channel is open
+    processMessageQueue();
   };
 
   dataChannel.onmessage = (event) => {
     let message = event.data;
-    message = filterSwearWords(message); // Filter received message
+    message = filterSwearWords(message);
+    const parts = message.split(":", 1);
+    let sender = "Other Peer";
+    if (parts.length > 0) {
+        sender = parts[0];
+        message = message.substring(sender.length + 1);
+    }
     console.log("Received:", message);
-    displayMessage("Other Peer", message);
+    displayMessage(sender, message);
   };
 
   dataChannel.onclose = () => {
@@ -76,11 +80,7 @@ const createOffer = async () => {
   const offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
 
-  // Send the offer to the other peer via the signaling server
   console.log("Offer sent");
-  //In a real implementation, you would send this to the signaling server.
-  //signalingServer.sendOffer(otherPeerId, offer);
-
   signalingServer.registerPeer("myPeerId", offer);
 };
 
@@ -95,10 +95,7 @@ const createAnswer = async (offer) => {
   const answer = await peerConnection.createAnswer();
   await peerConnection.setLocalDescription(answer);
 
-  // Send the answer to the other peer via the signaling server
   console.log("Answer sent");
-  //In a real implementation, you would send this to the signaling server.
-  //signalingServer.sendAnswer(otherPeerId, answer);
 };
 
 const setRemoteDescription = async (answer) => {
@@ -111,13 +108,13 @@ const setRemoteDescription = async (answer) => {
 
 const sendMessage = (message) => {
   if (dataChannel && dataChannel.readyState === "open" && authenticated) {
-    message = filterSwearWords(message); // Filter sent message
-    dataChannel.send(message);
+    message = filterSwearWords(message);
+    dataChannel.send(username + ": " + message); // Include username
     displayMessage("You", message);
   } else if (!authenticated) {
     alert("Enter the codeword first.");
   } else {
-    messageQueue.push(message); // Queue message if channel is not open
+    messageQueue.push(message);
   }
 };
 
@@ -125,10 +122,10 @@ const processMessageQueue = () => {
   if (dataChannel && dataChannel.readyState === "open") {
     messageQueue.forEach((queuedMessage) => {
       let message = filterSwearWords(queuedMessage);
-      dataChannel.send(message);
+      dataChannel.send(username + ": " + message); // Include username
       displayMessage("You", message);
     });
-    messageQueue = []; // Clear the queue
+    messageQueue = [];
   }
 };
 
@@ -141,6 +138,11 @@ const displayMessage = (sender, message) => {
 
 const authenticate = () => {
   const codewordInput = document.getElementById("codewordInput").value;
+  username = document.getElementById("usernameInput").value;
+  if (!username) {
+    alert("Please enter a username.");
+    return;
+  }
   if (codewordInput === codeword) {
     authenticated = true;
     document.getElementById("codewordSection").style.display = "none";
@@ -161,7 +163,7 @@ const viewOnlyMode = () => {
   document.getElementById("offerButton").disabled = true;
   document.getElementById("answerButton").disabled = true;
   document.getElementById("remoteDescriptionButton").disabled = true;
-}
+};
 
 const showRules = () => {
   document.getElementById("rulesPage").style.display = "block";
@@ -183,15 +185,15 @@ const swearWordsBase64 = [
   "Y3VudA==",
   "YXNzc2hvbGU=",
   "cGlzcw==",
-  "YW50aWJhbmxhbmRpYW5z", // antibanlandians - testing word
-  "ZWFnbGVyY3JhZnQ=" // eaglercraft
+  "YW50aWJhbmxhbmRpYW5z",
+  "ZWFnbGVyY3JhZnQ=",
 ];
 
 const swearWords = swearWordsBase64.map((word) => {
   let decodedWord = atob(word);
   let obfuscatedWord = "";
-  for(let i = 0; i < decodedWord.length; i++){
-    obfuscatedWord += String.fromCharCode(decodedWord.charCodeAt(i) + 5); // simple cipher
+  for (let i = 0; i < decodedWord.length; i++) {
+    obfuscatedWord += String.fromCharCode(decodedWord.charCodeAt(i) + 5);
   }
   return obfuscatedWord;
 });
@@ -206,7 +208,6 @@ const filterSwearWords = (message) => {
 };
 
 // --- HTML Interaction ---
-
 document.getElementById("authenticateButton").addEventListener("click", authenticate);
 document.getElementById("offerButton").addEventListener("click", createOffer);
 document.getElementById("sendButton").addEventListener("click", () => {
@@ -215,16 +216,16 @@ document.getElementById("sendButton").addEventListener("click", () => {
   messageInput.value = "";
 });
 document.getElementById("answerButton").addEventListener("click", async () => {
-    const offer = signalingServer.getPeer("otherPeerId");
-    if(offer){
-        await createAnswer(offer);
-    }
+  const offer = signalingServer.getPeer("otherPeerId");
+  if (offer) {
+    await createAnswer(offer);
+  }
 });
 document.getElementById("remoteDescriptionButton").addEventListener("click", async () => {
-    const answer = signalingServer.getPeer("myPeerId");
-    if(answer){
-        await setRemoteDescription(answer);
-    }
+  const answer = signalingServer.getPeer("myPeerId");
+  if (answer) {
+    await setRemoteDescription(answer);
+  }
 });
 document.getElementById("viewOnlyButton").addEventListener("click", viewOnlyMode);
 document.getElementById("rulesButton").addEventListener("click", showRules);
