@@ -1,10 +1,11 @@
-// QfB Chat with username support
+// QfB Chat with username support and automatic offer/answer
 
 // --- Codeword ---
 const codeword = "rhombicosidodecahedron";
 let authenticated = false;
 let viewOnly = false;
-let username = ""; // Store username
+let username = "";
+let isOfferer = false; // Determine if this peer is the offerer
 
 // --- Signaling Server (Simplified Example - Replace with a real one) ---
 const signalingServer = {
@@ -56,8 +57,8 @@ const setupDataChannel = () => {
     const parts = message.split(":", 1);
     let sender = "Other Peer";
     if (parts.length > 0) {
-        sender = parts[0];
-        message = message.substring(sender.length + 1);
+      sender = parts[0];
+      message = message.substring(sender.length + 1);
     }
     console.log("Received:", message);
     displayMessage(sender, message);
@@ -69,10 +70,6 @@ const setupDataChannel = () => {
 };
 
 const createOffer = async () => {
-  if (!authenticated) {
-    alert("Enter the codeword first.");
-    return;
-  }
   createPeerConnection();
   dataChannel = peerConnection.createDataChannel("chat");
   setupDataChannel();
@@ -85,10 +82,6 @@ const createOffer = async () => {
 };
 
 const createAnswer = async (offer) => {
-  if (!authenticated) {
-    alert("Enter the codeword first.");
-    return;
-  }
   createPeerConnection();
   await peerConnection.setRemoteDescription(offer);
 
@@ -99,17 +92,13 @@ const createAnswer = async (offer) => {
 };
 
 const setRemoteDescription = async (answer) => {
-  if (!authenticated) {
-    alert("Enter the codeword first.");
-    return;
-  }
   await peerConnection.setRemoteDescription(answer);
 };
 
 const sendMessage = (message) => {
   if (dataChannel && dataChannel.readyState === "open" && authenticated) {
     message = filterSwearWords(message);
-    dataChannel.send(username + ": " + message); // Include username
+    dataChannel.send(username + ": " + message);
     displayMessage("You", message);
   } else if (!authenticated) {
     alert("Enter the codeword first.");
@@ -122,7 +111,7 @@ const processMessageQueue = () => {
   if (dataChannel && dataChannel.readyState === "open") {
     messageQueue.forEach((queuedMessage) => {
       let message = filterSwearWords(queuedMessage);
-      dataChannel.send(username + ": " + message); // Include username
+      dataChannel.send(username + ": " + message);
       displayMessage("You", message);
     });
     messageQueue = [];
@@ -136,7 +125,7 @@ const displayMessage = (sender, message) => {
   chatLog.appendChild(messageElement);
 };
 
-const authenticate = () => {
+const authenticate = async () => {
   const codewordInput = document.getElementById("codewordInput").value;
   username = document.getElementById("usernameInput").value;
   if (!username) {
@@ -148,6 +137,18 @@ const authenticate = () => {
     document.getElementById("codewordSection").style.display = "none";
     document.getElementById("chatSection").style.display = "block";
     document.getElementById("viewOnlySection").style.display = "none";
+
+    // Automatic Offer/Answer logic
+    if (Object.keys(signalingServer.peers).length === 0) {
+      isOfferer = true;
+      await createOffer();
+    } else {
+      const offer = signalingServer.getPeer("otherPeerId");
+      if (offer) {
+        await createAnswer(offer);
+        await setRemoteDescription(signalingServer.getPeer("myPeerId"));
+      }
+    }
   } else {
     alert("Incorrect codeword.");
   }
@@ -208,24 +209,13 @@ const filterSwearWords = (message) => {
 };
 
 // --- HTML Interaction ---
-document.getElementById("authenticateButton").addEventListener("click", authenticate);
-document.getElementById("offerButton").addEventListener("click", createOffer);
+document.getElementById("authenticateButton").addEventListener("click", async () => {
+    await authenticate();
+});
 document.getElementById("sendButton").addEventListener("click", () => {
   const messageInput = document.getElementById("messageInput");
   sendMessage(messageInput.value);
   messageInput.value = "";
-});
-document.getElementById("answerButton").addEventListener("click", async () => {
-  const offer = signalingServer.getPeer("otherPeerId");
-  if (offer) {
-    await createAnswer(offer);
-  }
-});
-document.getElementById("remoteDescriptionButton").addEventListener("click", async () => {
-  const answer = signalingServer.getPeer("myPeerId");
-  if (answer) {
-    await setRemoteDescription(answer);
-  }
 });
 document.getElementById("viewOnlyButton").addEventListener("click", viewOnlyMode);
 document.getElementById("rulesButton").addEventListener("click", showRules);
