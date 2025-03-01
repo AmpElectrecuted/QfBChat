@@ -188,6 +188,10 @@ const swearWordsBase64 = [
   "cGlzcw==",
   "YW50aWJhbmxhbmRpYW5z",
   "ZWFnbGVyY3JhZnQ=",
+  "RGljaw==",
+  "UHVzc3k=",
+  "U2hpdAo=",
+  "RGFtbgo=",
 ];
 
 const swearWords = swearWordsBase64.map((word) => {
@@ -203,7 +207,7 @@ const filterSwearWords = (message) => {
   let filteredMessage = message;
   swearWords.forEach((word) => {
     const regex = new RegExp(`\\b${word}\\b`, "gi");
-    filteredMessage = filteredMessage.replace(regex, "****");
+    filteredMessage = filteredMessage.replace(regex, "[filtered word]");
   });
   return filteredMessage;
 };
