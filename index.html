@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QfB Chat</title>
+  <style>
+    #chatSection { display: none; }
+    #rulesPage { display: none; }
+  </style>
+</head>
+<body>
+  <div id="codewordSection">
+    <input type="password" id="codewordInput" placeholder="Enter Codeword" />
+    <button id="authenticateButton">Authenticate</button>
+    <button id="viewOnlyButton">View Only</button>
+    <button id="rulesButton">Rules</button>
+  </div>
+  <div id="chatSection">
+    <div id="chatLog"></div>
+    <input type="text" id="messageInput" />
+    <button id="sendButton">Send</button>
+    <button id="offerButton">Create Offer</button>
+    <button id="answerButton">Create Answer</button>
+    <button id="remoteDescriptionButton">Set Remote Description</button>
+  </div>
+    <div id="rulesPage">
+        <h1>Chat Rules</h1>
+        <ol>
+            <li>Be respectful to other users.</li>
+            <li>No spamming or flooding the chat.</li>
+            <li>No sharing personal information.</li>
+            <li>Follow Scratch Community Guidelines.</li>
+            <li>No swearing.</li>
+            <li>Have fun!</li>
+        </ol>
+        <button id="backButton">Back</button>
+    </div>
+
+  <script src="qfbchat.js"></script>
+</body>
+</html>
