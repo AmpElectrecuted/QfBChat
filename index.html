@@ -1,10 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>QfB Chat</title>
+  <title>WebRTC Text Chat</title>
   <style>
-    #chatSection { display: none; }
-    #rulesPage { display: none; }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background-color: white; /* Set background to white */
+      margin: 0;
+      padding: 20px;
+    }
+
+    #codewordSection, #chatSection, #rulesPage {
+      background-color: #f0f0f0; /* Light gray background for sections */
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    #chatSection, #rulesPage {
+      display: none; /* Hide chat and rules initially */
+    }
+
+    input[type="password"], input[type="text"] {
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50; /* Green button */
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #3e8e41;
+    }
+
+    #chatLog {
+      border: 1px solid #ddd;
+      padding: 10px;
+      height: 300px;
+      overflow-y: auto;
+      background-color: white;
+      margin-bottom: 10px;
+    }
+
+    #chatLog p {
+      margin: 5px 0;
+    }
+
+    #rulesPage h1 {
+      color: #333;
+    }
+
+    #rulesPage ol {
+      list-style-type: decimal;
+      padding-left: 20px;
+    }
+
+    #rulesPage li {
+      margin-bottom: 10px;
+    }
+
+    #rulesPage button {
+      background-color: #008CBA; /* Blue button for rules page */
+    }
+
+    #rulesPage button:hover {
+      background-color: #0077A3;
+    }
   </style>
 </head>
 <body>
@@ -29,12 +100,13 @@
             <li>No spamming or flooding the chat.</li>
             <li>No sharing personal information.</li>
             <li>Follow Scratch Community Guidelines.</li>
-            <li>No swearing.</li>
+            <li>No excessive swearing.</li>
+            <li>Do not mention eaglercraft.</li>
             <li>Have fun!</li>
         </ol>
         <button id="backButton">Back</button>
     </div>
 
-  <script src="qfbchat.js"></script>
+  <script src="your-script.js"></script>
 </body>
 </html>
