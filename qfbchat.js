@@ -26,6 +26,7 @@ const configuration = {
 
 let peerConnection;
 let dataChannel;
+let messageQueue = []; // Queue messages if data channel is not open
 
 const createPeerConnection = () => {
   peerConnection = new RTCPeerConnection(configuration);
@@ -48,6 +49,7 @@ const createPeerConnection = () => {
 const setupDataChannel = () => {
   dataChannel.onopen = () => {
     console.log("Data channel opened");
+    processMessageQueue(); // Process queued messages once channel is open
   };
 
   dataChannel.onmessage = (event) => {
@@ -115,7 +117,18 @@ const sendMessage = (message) => {
   } else if (!authenticated) {
     alert("Enter the codeword first.");
   } else {
-    console.error("Data channel not open");
+    messageQueue.push(message); // Queue message if channel is not open
+  }
+};
+
+const processMessageQueue = () => {
+  if (dataChannel && dataChannel.readyState === "open") {
+    messageQueue.forEach((queuedMessage) => {
+      let message = filterSwearWords(queuedMessage);
+      dataChannel.send(message);
+      displayMessage("You", message);
+    });
+    messageQueue = []; // Clear the queue
   }
 };
 
