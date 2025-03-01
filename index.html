@@ -5,13 +5,18 @@
   <style>
     body {
       font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      background-color: white; /* Set background to white */
+      background-color: white;
       margin: 0;
       padding: 20px;
     }
 
+    #header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     #codewordSection, #chatSection, #rulesPage {
-      background-color: #f0f0f0; /* Light gray background for sections */
+      background-color: #f0f0f0;
       border: 1px solid #ccc;
       padding: 20px;
       margin-bottom: 20px;
@@ -19,7 +24,7 @@
     }
 
     #chatSection, #rulesPage {
-      display: none; /* Hide chat and rules initially */
+      display: none;
     }
 
     input[type="password"], input[type="text"] {
@@ -32,7 +37,7 @@
 
     button {
       padding: 10px 20px;
-      background-color: #4CAF50; /* Green button */
+      background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 3px;
@@ -70,7 +75,7 @@
     }
 
     #rulesPage button {
-      background-color: #008CBA; /* Blue button for rules page */
+      background-color: #008CBA;
     }
 
     #rulesPage button:hover {
@@ -79,7 +84,11 @@
   </style>
 </head>
 <body>
+  <div id="header">
+    <h1>QfB Chat</h1>
+  </div>
   <div id="codewordSection">
+    <input type="text" id="usernameInput" placeholder="Enter Username" />
     <input type="password" id="codewordInput" placeholder="Enter Codeword" />
     <button id="authenticateButton">Authenticate</button>
     <button id="viewOnlyButton">View Only</button>
@@ -93,19 +102,19 @@
     <button id="answerButton">Create Answer</button>
     <button id="remoteDescriptionButton">Set Remote Description</button>
   </div>
-    <div id="rulesPage">
-        <h1>Chat Rules</h1>
-        <ol>
-            <li>Follow Scratch Community Guidelines.</li>
-            <li>No swearing, or anything you wouldn't like a child to see.</li>
-            <li>Be respectful to other users.</li>
-            <li>No spamming or flooding the chat.</li>
-            <li>No sharing personal information. Users outside QfB can still see the chat.</li>
-            <li>Have fun!</li>
-        </ol>
-        <button id="backButton">Back</button>
-    </div>
+  <div id="rulesPage">
+    <h1>QfB Chat Rules</h1>
+    <ol>
+      <li>Follow Scratch Community Guidelines.</li>
+      <li>No swearing, or anything you wouldn't like a child to see.</li>
+      <li>Be respectful to other users.</li>
+      <li>No spamming or flooding the chat.</li>
+      <li>No sharing personal information. Users outside QfB can still see the chat.</li>
+      <li>Have fun!</li>
+    </ol>
+    <button id="backButton">Back</button>
+  </div>
 
-  <script src="qfbchat.js"></script>
+  <script src="your-script.js"></script>
 </body>
 </html>
