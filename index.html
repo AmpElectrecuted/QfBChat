@@ -14,8 +14,8 @@
       margin-bottom: 20px;
     }
 
-    #footer {
-      position: fixed;
+    #footer { /* work in progress */
+      position: absolute;
       bottom: 0;
       width: 100%;
       margin-left: -10px;
@@ -108,23 +108,22 @@
   <div id="rulesPage">
     <h1>QfB Chat Rules</h1>
     <ol>
-      <li>Follow Scratch Community Guidelines.</li>
+      <li>Follow all Scratch Community Guidelines.</li>
       <li>No swearing, or anything you wouldn't like a child to see.</li>
       <li>Be respectful to other users.</li>
       <li>No spamming or flooding the chat.</li>
-      <li>No sharing personal information. Users outside QfB can still see the chat.</li>
+      <li>No sharing personal information. Remember that anyone can ee the chat.</li>
       <li>Have fun!</li>
     </ol>
     <button id="backButton">Back</button>
   </div>
-  <div id="footer">
-    <h2 style="text-align:center;">Scratch Movie: Quest for Bugs links</h2>
-    <hr>
-    <ul>
-      <li><a href="https://scratch.mit.edu/discuss/topic/797462" style="text-align:center;">Scratch Forum</a></li>
-      <li><a href="https://scratch.mit.edu/studios/35850607/" style="text-align:center;">Scratch Studio</a></li>
-      <li><a href="https://questforbugs.miraheze.org/wiki/Main_Page" style="text-align:center;">QfB Wiki</a></li>
-    </ul>
+  <br>
+  <div id="footer"> <!--It MAY work. No promises though.-->
+    <div style="text-align:center;">
+      <a href="https://scratch.mit.edu/discuss/topic/797462">Scratch Forum</a> | 
+      <a href="https://scratch.mit.edu/studios/35850607/">Scratch Studio</a> | 
+      <a href="https://questforbugs.miraheze.org/wiki/Main_Page">QfB Wiki</a>
+    </div>
   </div>
   <script src="qfbchat.js"></script>
 </body>
